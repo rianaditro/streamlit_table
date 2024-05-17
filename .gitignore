@@ -1,0 +1,4 @@
+*.txt
+*.xlsx
+venv/
+__pycache__/
