@@ -30,11 +30,22 @@ def clear_cache():
     st.cache_data.clear()
     st.cache_resource.clear()
 
+def highlight(s,n):
+    if s['%'] < n:
+        return ['background-color: yellow'] * len(s)
+    else:
+        return ['background-color: white'] * len(s)
+
 
 st.subheader("Statistik Perangkat 4 Modul", anchor=False)
 st.write("Tabel Terbaru")
-st.dataframe(view_data, use_container_width=True, hide_index=True, column_order=col_order, column_config=col_config)
-col1, col2 = st.columns(2)
+
+# dataframe with style
+asr_input = st.number_input('ASR Input', min_value=0, max_value=100, value=30, step=1, key="asr_input")
+# view_data = view_data.style.highlight_between(right=int(asr_input))
+
+st.dataframe(view_data.style.apply(highlight, n=asr_input, axis=1), use_container_width=True, hide_index=True, column_order=col_order, column_config=col_config)
+col1, col2, col3, col4, col5, col6 = st.columns(6)
 with col1:
     export_btn = st.button("Export Tabel", type='primary', key="export_btn")
 with col2:
