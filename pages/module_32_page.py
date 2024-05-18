@@ -5,9 +5,7 @@ from extentions.new_entry import entry_section
 
 conn = st.connection('main_db', type='sql')
 module = 'module_32'
-# col_order = ['upload_datetime', 'upload_ip', 'module','sim', 'net', 'grp', 'minutes', 'hhh:mmm', 'calls', 'reject', 'failed', 'c.offs', 'smses','%']
 module_df = conn.query(f'SELECT * FROM {module}_table')
-# module_df = module_df[col_order]
 
 
 # frontend section

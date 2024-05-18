@@ -17,13 +17,13 @@ CREATE TABLE IF NOT EXISTS module_32_table (
     net TEXT,
     grp TEXT,
     minutes TEXT,
-    'hhh:mm:ss' TEXT,
-    calls TEXT,
+    hms TEXT,
+    calls INTEGER,
     reject TEXT,
-    failed TEXT,
-    'c.offs' TEXT,
+    failed INTEGER,
+    coffs TEXT,
     smses TEXT,
-    '%' TEXT
+    asr FLOAT
 )
 ''')
 
@@ -34,15 +34,15 @@ CREATE TABLE IF NOT EXISTS module_4_table (
     upload_ip TEXT,
     module TEXT,
     '-' TEXT,
-    '(reset)' TEXT,
+    reset TEXT,
     minutes TEXT,
-    'hhh:mm:ss' TEXT,
-    calls TEXT,
-    reject TEXT,
-    failed TEXT,
-    'c.offs' TEXT,
+    hms TEXT,
+    calls INTEGER,
+    reject INTEGER,
+    failed INTEGER,
+    coffs TEXT,
     smses TEXT,
-    '%' TEXT
+    asr FLOAT
 )
 ''')
 

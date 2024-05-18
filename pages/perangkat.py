@@ -29,5 +29,4 @@ if save:
         for index, row in edited_perangkat_df.iterrows():
             s.execute(text(f"INSERT INTO perangkat_table (nama_perangkat, ip_address, tipe_perangkat) VALUES (\'{row['nama_perangkat']}\', \'{row['ip_address']}\', \'{row['tipe_perangkat']}\')"))
         s.commit()
-    st.session_state['is_updated'] += 1
     clear_cache()

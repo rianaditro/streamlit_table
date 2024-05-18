@@ -69,5 +69,10 @@ def entry_section(conn, module):
             upload_datetime = datetime.now()
             upload_ip = ip_address_selected
             preview_df = preview_df.assign(upload_id=upload_id,upload_datetime=upload_datetime,upload_ip=upload_ip)
+            # re-order columns
+            if module == 'module_4':
+                preview_df = preview_df[['upload_id','upload_datetime','upload_ip','module', '-', 'reset', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
+            elif module == 'module_32':
+                preview_df = preview_df[['upload_id','upload_datetime','upload_ip','module', 'sim', 'net', 'grp', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
             # append to database
             append_table(preview_df, f'{module}_table')

@@ -24,9 +24,9 @@ def format_dict(text:list, keys:list)->dict:
     failed = int(result['failed'])
     calls_failed = calls + failed
     try:
-        result['%'] = (calls/calls_failed) * 100
+        result['asr'] = (calls/calls_failed) * 100
     except ZeroDivisionError:
-        result['%'] = 0
+        result['asr'] = 0
     return result
 
 def format_list(raw_list:list,keys:list,module_no:int)->list:
@@ -39,7 +39,7 @@ def format_list(raw_list:list,keys:list,module_no:int)->list:
 
 def extract_module_32(txt_file):
     indexes = get_index(txt_file)
-    keys = ['sim', 'net', 'grp', 'minutes', 'hhh:mmm', 'calls', 'reject', 'failed', 'c.offs', 'smses']
+    keys = ['sim', 'net', 'grp', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses']
     result = []
     for i, start in enumerate(range(2,len(indexes),5)):
         data_per_module = txt_file[indexes[start]+1:indexes[start]+5]
@@ -49,7 +49,7 @@ def extract_module_32(txt_file):
 
 def extract_module_4(txt_file):
     result = []
-    keys = ['module', '-', '(reset)', 'minutes', 'hhh:mmm', 'calls', 'reject', 'failed', 'c.offs', 'smses']
+    keys = ['module', '-', 'reset', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses']
     module_0 = '[Statistics of calls on module #0]\r\n'
     module_1 = '[Statistics of calls on module #1]\r\n'
     module_2 = '[Statistics of calls on module #2]\r\n'
