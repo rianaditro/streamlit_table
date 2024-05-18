@@ -36,6 +36,7 @@ def entry_section(conn, module):
     # get list of selectbox
     perangkat_df = conn.query('SELECT * FROM perangkat_table')
     daftar_nama_perangkat = perangkat_df['nama_perangkat'].tolist()
+
     daftar_ip_address = perangkat_df['ip_address'].tolist()
     daftar_tipe_perangkat = perangkat_df['tipe_perangkat'].tolist()
 
@@ -45,7 +46,7 @@ def entry_section(conn, module):
         st.session_state["file_uploader_key"] = 0
 
     st.subheader("Tambah File", anchor=False)
-    col1, col2, col3 = st.column(3)
+    col1, col2, col3 = st.columns(3)
     with col1:
         nama_perangkat_selected = st.selectbox('Nama Perangkat', options=daftar_nama_perangkat, placeholder='Pilih Perangkat', key='nama_perangkat_key')
         index = daftar_nama_perangkat.index(nama_perangkat_selected)
