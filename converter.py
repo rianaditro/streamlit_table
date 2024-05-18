@@ -50,10 +50,10 @@ def extract_module_32(txt_file):
 def extract_module_4(txt_file):
     result = []
     keys = ['module', '-', '(reset)', 'minutes', 'hhh:mmm', 'calls', 'reject', 'failed', 'c.offs', 'smses']
-    module_0 = '[Statistics of calls on module #0]\n'
-    module_1 = '[Statistics of calls on module #1]\n'
-    module_2 = '[Statistics of calls on module #2]\n'
-    module_3 = '[Statistics of calls on module #3]\n'
+    module_0 = '[Statistics of calls on module #0]\r\n'
+    module_1 = '[Statistics of calls on module #1]\r\n'
+    module_2 = '[Statistics of calls on module #2]\r\n'
+    module_3 = '[Statistics of calls on module #3]\r\n'
 
     module_0_idx = txt_file.index(module_0)
     module_1_idx = txt_file.index(module_1)

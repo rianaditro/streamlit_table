@@ -1,7 +1,5 @@
 import streamlit as st
 
+st.set_page_config(page_title="Home", page_icon="🏠", layout="wide")
 
-conn = st.connection('main_db', type='sql')
-perangkat = conn.query('SELECT * FROM ip_address')
-
-st.data_editor(perangkat, use_container_width=True, num_rows='dynamic')
+st.write("welcome")
