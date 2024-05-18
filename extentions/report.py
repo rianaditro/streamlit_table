@@ -48,7 +48,7 @@ def report_section(df:pd.DataFrame, module:str):
         st.write("Tabel Terbaru")
         input1, input2, input3 = st.columns(3)
         with input1:
-            asr_input = st.number_input('Monitoring ASR', min_value=0, max_value=100, value=30, step=1, key="asr_input")
+            asr_input = st.number_input('Input ASR', min_value=0, max_value=100, value=30, step=1, key="asr_input")
         # dataframe with style
         view_data = df.style.apply(highlight, n=asr_input, axis=1)
 
