@@ -1,4 +1,5 @@
 *.txt
 *.xlsx
+*.sqlite
 venv/
 __pycache__/
