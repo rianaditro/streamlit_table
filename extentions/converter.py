@@ -24,7 +24,8 @@ def format_dict(text:list, keys:list)->dict:
     failed = int(result['failed'])
     calls_failed = calls + failed
     try:
-        result['asr'] = (calls/calls_failed) * 100
+        asr = (calls/calls_failed) * 100
+        result['asr'] = round(asr, 1)
     except ZeroDivisionError:
         result['asr'] = 0
     return result
