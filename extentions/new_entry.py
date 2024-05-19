@@ -4,6 +4,7 @@ import random
 
 from io import StringIO
 from datetime import datetime
+from sqlalchemy.sql import text
 
 from extentions.converter import extract_module_4, extract_module_32
 
@@ -25,6 +26,11 @@ def preview_upload_file(upload_file, module):
         preview_df = extract_module_32(txt)
     preview_df = pd.DataFrame(preview_df)
     return preview_df
+
+def append_history(data):
+    with conn.session as s:
+        s.execute(text(f'''INSERT INTO history_upload (upload_id, upload_datetime, ip_address, data) VALUES ("{data['upload_id']}", "{data['upload_datetime']}", "{data['upload_ip']}","{data['data']}")'''))
+        s.commit()
                
 def append_table(df:pd.DataFrame, tablename):
     df.to_sql(tablename, cursor, if_exists='append', index=False)
@@ -74,5 +80,9 @@ def entry_section(conn, module):
                 preview_df = preview_df[['upload_id','upload_datetime','upload_ip','module', '-', 'reset', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
             elif module == 'module_32':
                 preview_df = preview_df[['upload_id','upload_datetime','upload_ip','module', 'sim', 'net', 'grp', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
+            # add history data into database
+            history_data = {'upload_id':upload_id, 'upload_datetime':upload_datetime, 'upload_ip':upload_ip, 'data':str(preview_df.to_dict())}
+            append_history(history_data)
             # append to database
             append_table(preview_df, f'{module}_table')
+
