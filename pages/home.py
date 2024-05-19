@@ -12,7 +12,7 @@ module_4_df = conn.query('SELECT * FROM module_4_table')
 module_32_df = conn.query(f'SELECT * FROM module_32_table')
 
 def highlight(s,n):
-    if s['asr'] <= n:
+    if float(s['asr']) <= n:
         return ['background-color: orange'] * len(s)
     else:
         return ['background-color: white'] * len(s)

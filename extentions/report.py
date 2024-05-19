@@ -17,7 +17,7 @@ def clear_cache():
 
 # highlight dataframe based on input
 def highlight(s,n):
-    if s['asr'] <= n:
+    if float(s['asr']) <= n:
         return ['background-color: orange'] * len(s)
     else:
         return ['background-color: white'] * len(s)
@@ -57,8 +57,13 @@ def report_section(df:pd.DataFrame, module:str):
             asr_input = st.number_input('Input ASR', min_value=0, 
                                         max_value=100, value=30, step=1, 
                                         key="asr_input_key")
+            filter_data = st.checkbox('Tampilkan Data dibawah ASR', key="checkbox_key")
         # dataframe with style
-        view_data = df.style.apply(highlight, n=asr_input, axis=1)
+        if filter_data:
+            # change TEXT data column to numeric for filter
+            view_data = df[df['asr'].apply(pd.to_numeric) <= asr_input]
+        else:
+            view_data = df.style.apply(highlight, n=asr_input, axis=1)
 
         show_dataframe(view_data, column_config)
         col1, col2, col3, col4, col5, col6 = st.columns(6)

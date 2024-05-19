@@ -29,7 +29,7 @@ def preview_upload_file(upload_file, module):
 
 def append_history(data):
     with conn.session as s:
-        s.execute(text(f'''INSERT INTO history_upload (upload_id, upload_datetime, ip_address, data) VALUES ("{data['upload_id']}", "{data['upload_datetime']}", "{data['upload_ip']}","{data['data']}")'''))
+        s.execute(text(f'''INSERT INTO history_upload (upload_id, upload_datetime, ip_address) VALUES ("{data['upload_id']}", "{data['upload_datetime']}", "{data['upload_ip']}")'''))
         s.commit()
                
 def append_table(df:pd.DataFrame, tablename):
@@ -49,8 +49,12 @@ def entry_section(conn, module):
 
     # get list of selectbox
     perangkat_df = conn.query(f'SELECT * FROM perangkat_table WHERE tipe_perangkat = "{tipe_perangkat}"')
-    daftar_nama_perangkat = perangkat_df['nama_perangkat'].tolist()
-    daftar_ip_address = perangkat_df['ip_address'].tolist()
+    if len(perangkat_df) == 0:
+        daftar_nama_perangkat = ['------------------']
+        daftar_ip_address = ['------------------']
+    else:
+        daftar_nama_perangkat = perangkat_df['nama_perangkat'].tolist()
+        daftar_ip_address = perangkat_df['ip_address'].tolist()
 
     # set key for widget upload file
     if "file_uploader_key" not in st.session_state:
@@ -60,7 +64,10 @@ def entry_section(conn, module):
     col1, col2, col3 = st.columns(3)
     with col1:
         nama_perangkat_selected = st.selectbox('Nama Perangkat', options=daftar_nama_perangkat, placeholder='Pilih Perangkat', key='nama_perangkat_key')
-        index = daftar_nama_perangkat.index(nama_perangkat_selected)
+        try:
+            index = daftar_nama_perangkat.index(nama_perangkat_selected)
+        except ValueError:
+            index = 0
     with col2:
         ip_address_selected = st.text_input("IP Address", value=daftar_ip_address[index],disabled=True, key='ip_address_key')
     with col3:
@@ -84,7 +91,7 @@ def entry_section(conn, module):
             if module == 'module_4':
                 preview_df = preview_df[['upload_id','upload_datetime','upload_ip','module', '-', 'reset', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
             elif module == 'module_32':
-                preview_df = preview_df[['upload_id','upload_datetime','upload_ip','module', 'sim', 'net', 'grp', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
+                preview_df = preview_df[['upload_id','upload_datetime','upload_ip','module', 'sim', 'net', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
             # add history data into database
             history_data = {'upload_id':upload_id, 'upload_datetime':upload_datetime, 'upload_ip':upload_ip, 'data':str(preview_df.to_dict())}
             append_history(history_data)

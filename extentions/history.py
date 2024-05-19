@@ -7,13 +7,13 @@ conn = st.connection('main_db', type='sql')
 def update_table(module_filter):
     if module_filter == 'All':
         history_data = conn.query(f'''
-                                  SELECT h.upload_id, h.upload_datetime, h.ip_address, p.nama_perangkat, p.tipe_perangkat, h.data FROM history_upload as h 
+                                  SELECT h.upload_id, h.upload_datetime, h.ip_address, p.nama_perangkat, p.tipe_perangkat FROM history_upload as h 
                                   JOIN perangkat_table as p 
                                   ON h.ip_address = p.ip_address 
                                   ORDER BY h.upload_datetime DESC''')
     else:
         history_data = conn.query(f'''
-                                  SELECT h.upload_id, h.upload_datetime, h.ip_address, p.nama_perangkat, p.tipe_perangkat, h.data FROM history_upload as h 
+                                  SELECT h.upload_id, h.upload_datetime, h.ip_address, p.nama_perangkat, p.tipe_perangkat FROM history_upload as h 
                                   JOIN perangkat_table as p 
                                   ON h.ip_address = p.ip_address
                                   WHERE tipe_perangkat = "{module_filter}"

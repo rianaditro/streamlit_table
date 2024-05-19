@@ -58,7 +58,7 @@ c.execute('''
 CREATE TABLE IF NOT EXISTS history_upload (
     upload_id INTEGER PRIMARY_KEY,
     upload_datetime TEXT,
-    ip_address TEXT,
+    ip_address TEXT
 )
 ''')
 
