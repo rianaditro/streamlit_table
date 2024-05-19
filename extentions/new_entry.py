@@ -39,13 +39,18 @@ def append_table(df:pd.DataFrame, tablename):
     clear_cache()
 
 def entry_section(conn, module):
+    # validate module and database
+    if module == 'module_4':
+        tipe_perangkat = 'Perangkat 4 Modul'
+    elif module == 'module_32':
+        tipe_perangkat = 'Perangkat 32 Modul'
+    else:
+        tipe_perangkat = '------------------'
+
     # get list of selectbox
-    perangkat_df = conn.query('SELECT * FROM perangkat_table')
+    perangkat_df = conn.query(f'SELECT * FROM perangkat_table WHERE tipe_perangkat = "{tipe_perangkat}"')
     daftar_nama_perangkat = perangkat_df['nama_perangkat'].tolist()
-
     daftar_ip_address = perangkat_df['ip_address'].tolist()
-    daftar_tipe_perangkat = perangkat_df['tipe_perangkat'].tolist()
-
 
     # set key for widget upload file
     if "file_uploader_key" not in st.session_state:
@@ -59,7 +64,7 @@ def entry_section(conn, module):
     with col2:
         ip_address_selected = st.text_input("IP Address", value=daftar_ip_address[index],disabled=True, key='ip_address_key')
     with col3:
-        tipe_perangkat_selected = st.text_input('Tipe Perangkat', value=daftar_tipe_perangkat[index], disabled=True, key='tipe_perangkat_key')
+        tipe_perangkat_selected = st.text_input('Tipe Perangkat', value=tipe_perangkat, disabled=True, key='tipe_perangkat_key')
 
     upload = st.file_uploader('Pilih File', type='txt', accept_multiple_files=False, key=st.session_state["file_uploader_key"])
 

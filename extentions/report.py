@@ -18,7 +18,7 @@ def clear_cache():
 # highlight dataframe based on input
 def highlight(s,n):
     if s['asr'] <= n:
-        return ['background-color: yellow'] * len(s)
+        return ['background-color: orange'] * len(s)
     else:
         return ['background-color: white'] * len(s)
 
