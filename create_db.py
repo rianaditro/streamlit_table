@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS module_ge_table (
     asr TEXT,
     acd TEXT,
     allocated_ammount TEXT,
-    consumed_amount TEXT,
+    consumed_amount TEXT
 )
 ''')
 

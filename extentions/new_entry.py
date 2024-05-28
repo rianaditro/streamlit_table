@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import random
 
 from io import StringIO
 from datetime import datetime
@@ -44,6 +43,8 @@ def entry_section(conn, module):
         tipe_perangkat = 'Perangkat 4 Modul'
     elif module == 'module_32':
         tipe_perangkat = 'Perangkat 32 Modul'
+    elif module == 'module_ge':
+        tipe_perangkat = 'Perangkat GE'
     else:
         tipe_perangkat = '------------------'
 
@@ -83,15 +84,19 @@ def entry_section(conn, module):
         submit_btn = st.button("Tambah ke Database", type='primary', key="submit_btn")
         if submit_btn:
             # add additional data
-            upload_id = random.randrange(1,99999)
             upload_datetime = datetime.now()
+            upload_id = int(upload_datetime.strftime("%Y%m%d%H%M%S"))
             upload_ip = ip_address_selected
             preview_df = preview_df.assign(upload_id=upload_id,upload_datetime=upload_datetime,upload_ip=upload_ip)
+            
             # re-order columns
             if module == 'module_4':
                 preview_df = preview_df[['upload_id','upload_datetime','upload_ip','module', '-', 'reset', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
             elif module == 'module_32':
                 preview_df = preview_df[['upload_id','upload_datetime','upload_ip','module', 'sim', 'net', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
+            elif module == 'module_ge':
+                preview_df = preview_df[['upload_id','upload_datetime','upload_ip','mobile_port', 'port_status', 'signal_strength', 'call_duration', 'dialed_calls', 'successfull_calls', 'asr', 'acd', 'allocated_ammount', 'consumed_amount']]
+            
             # add history data into database
             history_data = {'upload_id':upload_id, 'upload_datetime':upload_datetime, 'upload_ip':upload_ip, 'data':str(preview_df.to_dict())}
             append_history(history_data)

@@ -16,10 +16,7 @@ def perangkat_main():
                                         num_rows='dynamic',
                                         column_config={
                                             'tipe_perangkat':st.column_config.SelectboxColumn("Tipe Perangkat", 
-                                                                            options=['Perangkat 4 Modul', 'Perangkat 32 Modul']
-                                                                            )
-                                                        }
-                                        )
+                                                                            options=['Perangkat GE', 'Perangkat 4 Modul', 'Perangkat 32 Modul'])})
 
     save = st.button("Simpan Perubahan", key="change_ip_btn", type='primary')
     if save:
