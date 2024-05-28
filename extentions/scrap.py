@@ -2,14 +2,12 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup as bs4
+from io import StringIO
 
 from converter import extract_module_32, extract_module_4
 
 import pandas as pd
-import time
 
 
 class Scraper:
@@ -25,11 +23,11 @@ class Scraper:
         options.add_argument("start-maximized")
         options.add_argument('--ignore-ssl-errors=yes')
         options.add_argument('--ignore-certificate-errors')
+        options.add_argument('--enable-javascript')
         # options.add_argument("--headless")
         driver = webdriver.Chrome(options=options)
         return driver
     
-    # default = True for VBM and SG Module
     def login(self, module:str='GE'):
         if module != 'GE':
             username_field = self.driver.find_element(By.NAME, 'user')
@@ -37,36 +35,31 @@ class Scraper:
             username_field.send_keys('Admin')
             password_field.send_keys('2n')
         else: 
-            time.sleep(3)
+            frame = self.driver.find_element(By.ID, "UserWin")
+            self.driver.switch_to.frame(frame)
             password_field = self.driver.find_element(By.NAME, 'LOGIN_PASSWORD')
             password_field.send_keys('Artatel@8900')
         password_field.send_keys(Keys.RETURN)
 
     def get_html(self, ip_address, module:str='GE'):
-    # check protocol connection
-        def check_ip(ip_address, module):
-            if module == 'GE':
-                self.ip_address = f'https://{ip_address}'
-            else:
-                self.ip_address = f'http://{ip_address}'
-        check_ip(ip_address, module)
-        self.driver.get(self.ip_address)
+        self.driver.get(ip_address)
         self.login(module=module)
         # if not GE then VBM or SG
         if module != 'GE':
-            self.driver.get(f'{self.ip_address}/?section=3')
+            self.driver.get(f'{ip_address}/?section=3')
             self.html = self.driver.page_source
         else:
             # Page is divided by 3 sub page
-            self.driver.get(f'{self.ip_address}/MobileStatus.html?SubPageIndex=1')
+            self.driver.get(f'{ip_address}/MobileStatus.html?SubPageIndex=1')
             self.html = self.driver.page_source
-            self.driver.get(f'{self.ip_address}/MobileStatus.html?SubPageIndex=2')
+            self.driver.get(f'{ip_address}/MobileStatus.html?SubPageIndex=2')
             self.html2 = self.driver.page_source
-            self.driver.get(f'{self.ip_address}/MobileStatus.html?SubPageIndex=3')
+            self.driver.get(f'{ip_address}/MobileStatus.html?SubPageIndex=3')
             self.html3 = self.driver.page_source
         
 
     def get_data(self, ip_address, module:str='GE'):
+        self.ip_address = ip_address
         self.get_html(ip_address, module=module)
         if module != 'GE':
             soup = bs4(self.html, 'html.parser')
@@ -76,12 +69,11 @@ class Scraper:
                 extracted_data = extract_module_4(result)
             elif module == 'SG':
                 extracted_data = extract_module_32(result)
-
             df = pd.DataFrame(extracted_data)
             return df
         else:
             def extract_table(html):
-                df = pd.read_html(html)[-2]
+                df = pd.read_html(StringIO(html), flavor='bs4')[-2]
                 df = df[[1,6,9,10,11,12,13,20,21]]
                 df.rename(columns={1:'Port Status', 6:'Signal Strenght', 
                                    9:'Call Duration', 10:'Dialed Calls', 11:'Successfull Calls', 
@@ -105,18 +97,18 @@ if __name__ == "__main__":
     GE still invalid
     VBM converter need additional adjustment
     '''
-    # ge = '192.168.110.169'
-    # vbm = '192.168.111.48'
-    # se = '192.168.110.210'
+    ge = 'https://192.168.110.169'
+    vbm = 'http://192.168.111.48'
+    se = 'http://192.168.110.210'
 
-    # scraper = Scraper()
+    scraper = Scraper()
 
-    # ge_df = scraper.get_data(ge, module='GE')
-    # vbm_df = scraper.get_data(vbm, module='VBM')
-    # se_df = scraper.get_data(se, module='SG')
+    ge_df = scraper.get_data(ge, module='GE')
+    vbm_df = scraper.get_data(vbm, module='VBM')
+    se_df = scraper.get_data(se, module='SG')
 
-    # ge_df.to_excel('ge.xlsx', index=False)
-    # vbm_df.to_excel('vbm.xlsx', index=False)
-    # se_df.to_excel('se.xlsx', index=False)
+    ge_df.to_excel('ge.xlsx', index=False)
+    vbm_df.to_excel('vbm.xlsx', index=False)
+    se_df.to_excel('se.xlsx', index=False)
     
 
