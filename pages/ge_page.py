@@ -5,7 +5,7 @@ from extentions.new_entry import entry_section
 from extentions.history import history_section
 
 
-def module_4_main():
+def ge_main_module():
     conn = st.connection('main_db', type='sql')
     module = 'module_ge'
     module_df = conn.query(f'SELECT * FROM {module}_table')
@@ -17,7 +17,7 @@ def module_4_main():
     st.divider()
     history_section(module=module)
     st.divider()
-    entry_section(conn=conn, module=module)
+    # entry_section(conn=conn, module=module)
 
 
 

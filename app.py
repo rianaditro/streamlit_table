@@ -10,7 +10,7 @@ page = st_navbar(["Dashboard","Statistik GE", "Statistik 4 Modul", "Statistik 32
 if page == "Dashboard":
     pg.home_main()
 elif page == "Statistik GE":
-    pg.ge_module()
+    pg.ge_main_module()
 elif page == "Statistik 4 Modul":
     pg.module_4_main()
 elif page == "Statistik 32 Modul":
