@@ -62,6 +62,25 @@ CREATE TABLE IF NOT EXISTS history_upload (
 )
 ''')
 
+# Membuat tabel
+c.execute('''
+CREATE TABLE IF NOT EXISTS module_ge_table (
+    upload_id INTEGER,
+    upload_datetime TEXT,
+    upload_ip TEXT,
+    mobile_port TEXT,
+    port_status TEXT,
+    signal_strenght TEXT,
+    call_duration TEXT,
+    dialed_calls TEXT,
+    successfull_calls TEXT,
+    asr TEXT,
+    acd TEXT,
+    allocated_ammount TEXT,
+    consumed_amount TEXT,
+)
+''')
+
 # Menyimpan perubahan
 conn.commit()
 

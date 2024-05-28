@@ -5,10 +5,12 @@ from streamlit_navigation_bar import st_navbar
 import pages as pg
 
 
-page = st_navbar(["Dashboard", "Statistik 4 Modul", "Statistik 32 Modul", "Manajemen Perangkat"],
+page = st_navbar(["Dashboard","Statistik GE", "Statistik 4 Modul", "Statistik 32 Modul", "Manajemen Perangkat"],
                  options={'show_menu':False, 'show_sidebar':False})
 if page == "Dashboard":
     pg.home_main()
+elif page == "Statistik GE":
+    pg.ge_module()
 elif page == "Statistik 4 Modul":
     pg.module_4_main()
 elif page == "Statistik 32 Modul":

@@ -10,6 +10,8 @@ conn = st.connection('main_db', type='sql')
 module_4_df = conn.query('SELECT * FROM module_4_table')
 # module 32
 module_32_df = conn.query(f'SELECT * FROM module_32_table')
+# module GE
+module_ge_df = conn.query(f'SELECT * FROM module_ge_table')
 
 def highlight(s,n):
     if float(s['asr']) <= n:
@@ -19,11 +21,11 @@ def highlight(s,n):
 
 def home_main():
     # frontend section
-    st.write("welcome,")
-    st.subheader("Statistik Tabel Perangkat 32 Modul", anchor=False)
+    st.write("Welcome!")
     column_config = {'upload_datetime':'Tanggal dan Waktu Upload', 
                         'upload_ip':'IP Perangkat'}
-        
+    
+    st.subheader("Statistik Tabel Perangkat GE", anchor=False)
     with st.container(border=True):
         st.write("Tabel Terbaru")
         input1, input2, input3 = st.columns(3)
@@ -32,10 +34,20 @@ def home_main():
                                         max_value=100, value=30, step=1, 
                                         key="asr_home_key")
         # dataframe with style
+        view_data_ge = module_ge_df.style.apply(highlight, n=asr_input, axis=1)
+
+        show_dataframe(view_data_ge, column_config)
+    st.divider()   
+
+    st.subheader("Statistik Tabel Perangkat 32 Modul", anchor=False)
+    with st.container(border=True):
+        st.write("Tabel Terbaru")
+        # dataframe with style
         view_data_32 = module_32_df.style.apply(highlight, n=asr_input, axis=1)
 
         show_dataframe(view_data_32, column_config)
     st.divider()
+
     st.subheader("Statistik Tabel Perangkat 4 Modul", anchor=False)
     with st.container(border=True):
         st.write("Tabel Terbaru")
