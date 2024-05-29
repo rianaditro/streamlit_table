@@ -15,11 +15,12 @@ def format_dict(text:list, keys:list)->dict:
     result = dict()
     text = text.split(' ')
     text = [i for i in text if i != '']
-    i = 0
+    # i = 0
     for i in range(len(text)):
-        result[keys[i]] = text[i].replace('\n','')
-        i += 1
+        result[keys[i]] = text[i].replace('\n','').replace('\r','')
+        # i += 1
     # add ASR column calls/calls+failed
+    print(result)
     calls = int(result['calls'])
     failed = int(result['failed'])
     calls_failed = calls + failed
@@ -49,27 +50,14 @@ def extract_module_32(txt_file):
     return result
 
 def extract_module_4(txt_file):
+    indexes = get_index(txt_file)
+    print(indexes)
     result = []
     keys = ['module', '-', 'reset', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses']
-    module_0 = '[Statistics of calls on module #0]'
-    module_1 = '[Statistics of calls on module #1]'
-    module_2 = '[Statistics of calls on module #2]'
-    module_3 = '[Statistics of calls on module #3]'
-
-    module_0_idx = txt_file.index(module_0)
-    module_1_idx = txt_file.index(module_1)
-    module_2_idx = txt_file.index(module_2)
-    module_3_idx = txt_file.index(module_3)
-
-    all_data = [txt_file[module_0_idx+9], 
-                txt_file[module_1_idx+9], 
-                txt_file[module_2_idx+9], 
-                txt_file[module_3_idx+9]]
-
-    for data in all_data:
-        data = format_dict(data, keys)
-        result.append(data)
-
+    for i, start in enumerate(range(1,len(indexes),5)):
+        data_per_module = [txt_file[indexes[start]+1]]
+        data_per_module = format_list(data_per_module, keys,i)
+        result.extend(data_per_module)
     return result
     
 
