@@ -17,8 +17,11 @@ def clear_cache():
 
 # highlight dataframe based on input
 def highlight(s,n):
-    if float(s['asr']) <= n and float(s['calls']) > 0:
-        return ['background-color: orange'] * len(s)
+    if float(s['asr']) < n:
+        if float(s['calls']) > 0:
+            return ['background-color: orange'] * len(s)
+        else:
+            return ['background-color: white'] * len(s)
     else:
         return ['background-color: white'] * len(s)
 
@@ -46,6 +49,13 @@ def delete_table(tablename:str, db_connection):
             s.commit()
         clear_cache()
 
+def update_asr(db_connection, update_value):
+    st.session_state['asr_value'] = update_value
+    with db_connection.session as s:
+        s.execute(text(f'UPDATE asr_value SET asr_value = {update_value} WHERE id = 1'))
+        s.commit()
+    clear_cache()
+
 def report_section(df:pd.DataFrame, module:str):
     column_config = {'upload_datetime':'Tanggal dan Waktu Upload', 
                      'upload_ip':'IP Perangkat'}
@@ -55,13 +65,16 @@ def report_section(df:pd.DataFrame, module:str):
         input1, input2, input3 = st.columns(3)
         with input1:
             asr_input = st.number_input('Input ASR', min_value=0, 
-                                        max_value=100, value=30, step=1, 
+                                        max_value=100, value=st.session_state['asr_value'], step=1, 
                                         key="asr_input_key")
+            if asr_input != st.session_state['asr_value']:
+                update_asr(conn, asr_input)
+
             filter_data = st.checkbox('Tampilkan Data dibawah ASR', key="checkbox_key")
         # dataframe with style
         if filter_data:
             # change TEXT data column to numeric for filter
-            view_data = df[df['asr'].apply(pd.to_numeric) <= asr_input]
+            view_data = df[df['asr'].apply(pd.to_numeric) < st.session_state['asr_value']]
         else:
             view_data = df.style.apply(highlight, n=asr_input, axis=1)
 

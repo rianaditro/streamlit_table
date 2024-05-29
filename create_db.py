@@ -81,6 +81,19 @@ CREATE TABLE IF NOT EXISTS module_ge_table (
 )
 ''')
 
+c.execute('''
+CREATE TABLE IF NOT EXISTS asr_value (
+    asr_value INTEGER,
+    id INTEGER PRIMARY_KEY
+)
+''')
+
+c.execute('''
+INSERT INTO asr_value (
+    asr_value, id)
+    VALUES (30, 1)
+''')
+
 # Menyimpan perubahan
 conn.commit()
 

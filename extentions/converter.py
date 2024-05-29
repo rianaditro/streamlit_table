@@ -61,7 +61,10 @@ def extract_module_4(txt_file):
     module_2_idx = txt_file.index(module_2)
     module_3_idx = txt_file.index(module_3)
 
-    all_data = [txt_file[module_0_idx+9], txt_file[module_1_idx+9], txt_file[module_2_idx+9], txt_file[module_3_idx+9]]
+    all_data = [txt_file[module_0_idx+9], 
+                txt_file[module_1_idx+9], 
+                txt_file[module_2_idx+9], 
+                txt_file[module_3_idx+9]]
 
     for data in all_data:
         data = format_dict(data, keys)
