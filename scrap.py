@@ -5,9 +5,9 @@ from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup as bs4
 from io import StringIO
 
-from app.extentions.converter import extract_module_32, extract_module_4
+from extentions.converter import extract_module_32, extract_module_4
 
-import pandas as pd
+import pandas as pd, logging
 
 
 class Scraper:
@@ -40,6 +40,7 @@ class Scraper:
             password_field = self.driver.find_element(By.NAME, 'LOGIN_PASSWORD')
             password_field.send_keys('Artatel@8900')
         password_field.send_keys(Keys.RETURN)
+        logging.info(f"Logged into {self.ip_address}")
 
     def get_html(self, ip_address, module:str):
         self.driver.get(ip_address)
@@ -70,6 +71,7 @@ class Scraper:
             elif module == 'Perangkat 32 Modul':
                 extracted_data = extract_module_32(result)
             df = pd.DataFrame(extracted_data)
+            logging.info(f"Data extracted from {self.ip_address}")
             return df
         else:
             def extract_table(html):
@@ -88,5 +90,6 @@ class Scraper:
             df['Mobile Port'] = df.index+1
             column_order = ['Mobile Port']+[col for col in df.columns if col != 'Mobile Port']
             df = df[column_order]
+            logging.info(f"Data extracted from {self.ip_address}")
             return df
 

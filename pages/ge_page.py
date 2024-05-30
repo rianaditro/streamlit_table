@@ -2,7 +2,6 @@ import streamlit as st
 
 from datetime import timedelta
 from extentions.report import report_section
-from extentions.new_entry import entry_section
 from extentions.history import history_section
 
 
