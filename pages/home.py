@@ -1,24 +1,29 @@
 import streamlit as st
+import pandas as pd
 
-from streamlit_navigation_bar import st_navbar
+from datetime import timedelta
+from extentions.report import update_asr
 
-from extentions.report import show_dataframe
 
-
-conn = st.connection('main_db', type='sql')
+conn = st.connection('main_db', type='sql', ttl=timedelta(minutes=59))
 # module 4
-module_4_df = conn.query('SELECT * FROM module_4_table')
+module_4_df = conn.query('SELECT m.upload_id, m.upload_datetime, p.nama_perangkat, m.upload_ip, p.tipe_perangkat, m.module, m.hms, m.calls, m.asr FROM module_4_table AS m JOIN perangkat_table AS p ON m.upload_ip = p.ip_address WHERE p.tipe_perangkat = "Perangkat 4 Modul" ORDER BY m.upload_datetime DESC')
+module_4_df.rename(columns={'module':'module/mobile_port', 'hms':'call_duration', 'calls':'successfull_calls', 'asr':'ASR(%)'}, inplace=True)
 # module 32
-module_32_df = conn.query(f'SELECT * FROM module_32_table')
+module_32_df = conn.query('SELECT m.upload_id, m.upload_datetime, p.nama_perangkat, m.upload_ip, p.tipe_perangkat, m.module, m.hms, m.calls, m.asr FROM module_32_table AS m JOIN perangkat_table AS p ON m.upload_ip = p.ip_address WHERE p.tipe_perangkat = "Perangkat 32 Modul" ORDER BY m.upload_datetime DESC')
+module_32_df.rename(columns={'module':'module/mobile_port', 'hms':'call_duration', 'calls':'successfull_calls', 'asr':'ASR(%)'}, inplace=True)
 # module GE
-module_ge_df = conn.query(f'SELECT * FROM module_ge_table')
+module_ge_df = conn.query('SELECT m.upload_id, m.upload_datetime, p.nama_perangkat, m.upload_ip, p.tipe_perangkat, m.mobile_port, m.call_duration, m.successfull_calls, m.asr FROM module_ge_table AS m JOIN perangkat_table AS p ON m.upload_ip = p.ip_address WHERE p.tipe_perangkat = "Perangkat GE" ORDER BY m.upload_datetime DESC')
+module_ge_df.rename(columns={'mobile_port':'module/mobile_port', 'asr':'ASR(%)'}, inplace=True)
+
+data = pd.concat([module_4_df, module_32_df, module_ge_df], ignore_index=True)
 
 default_asr = conn.query('SELECT asr_value FROM asr_value WHERE id = 1')
 
 
 def highlight(s,n):
-    if float(s['asr']) < n:
-        if float(s['calls']) > 0:
+    if float(s['ASR(%)']) < n:
+        if float(s['successfull_calls']) > 0:
             return ['background-color: orange'] * len(s)
         else:
             return ['background-color: white'] * len(s)
@@ -29,31 +34,24 @@ def home_main():
     st.session_state['asr_value'] = default_asr['asr_value'][0]
     # frontend section
     st.write("Welcome!")
-    column_config = {'upload_datetime':'Tanggal dan Waktu Upload', 
-                        'upload_ip':'IP Perangkat'}
     
-    st.subheader("Statistik Tabel Perangkat GE", anchor=False)
+    st.subheader("Statistik Tabel Terkini", anchor=False)
     with st.container(border=True):
         st.write("Tabel Terbaru")
+        input1, input2, input3 = st.columns(3)
+        with input1:
+            asr_input = st.number_input('Input ASR', min_value=0, 
+                                        max_value=100, value=st.session_state['asr_value'], step=1, 
+                                        key="asr_input_key")
+            if asr_input != st.session_state['asr_value']:
+                update_asr(conn, asr_input)
+
+            filter_data = st.checkbox('Tampilkan Data dibawah ASR', key="checkbox_key")
         # dataframe with style
-        view_data_ge = module_ge_df.style.apply(highlight, n=st.session_state['asr_value'], axis=1)
+        if filter_data:
+            # change TEXT data column to numeric for filter
+            view_data = data[data['ASR(%)'].apply(pd.to_numeric) < st.session_state['asr_value']]
+        else:
+            view_data = data.style.apply(highlight, n=asr_input, axis=1)
 
-        show_dataframe(view_data_ge, column_config)
-    st.divider()   
-
-    st.subheader("Statistik Tabel Perangkat 32 Modul", anchor=False)
-    with st.container(border=True):
-        st.write("Tabel Terbaru")
-        # dataframe with style
-        view_data_32 = module_32_df.style.apply(highlight, n=st.session_state['asr_value'], axis=1)
-
-        show_dataframe(view_data_32, column_config)
-    st.divider()
-
-    st.subheader("Statistik Tabel Perangkat 4 Modul", anchor=False)
-    with st.container(border=True):
-        st.write("Tabel Terbaru")
-        # dataframe with style
-        view_data_4 = module_4_df.style.apply(highlight, n=st.session_state['asr_value'], axis=1)
-
-        show_dataframe(view_data_4, column_config)
+        st.dataframe(view_data)
