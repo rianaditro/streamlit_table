@@ -40,7 +40,7 @@ def append_table(df:pd.DataFrame, tablename):
 
 def upload_data(dataframe, ip_address, module):
     upload_datetime = datetime.now()
-    upload_id = int(upload_datetime.strftime("%Y%m%d%H"))
+    upload_id = upload_datetime.strftime("%Y%m%d%H")+'_ID'
     upload_ip = ip_address
     dataframe = dataframe.assign(upload_id=upload_id,upload_datetime=upload_datetime,upload_ip=upload_ip)
     
