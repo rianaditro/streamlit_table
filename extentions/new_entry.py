@@ -37,6 +37,26 @@ def append_table(df:pd.DataFrame, tablename):
     del st.session_state[(st.session_state["file_uploader_key"]-1)]
     clear_cache()
 
+def upload_data(dataframe, ip_address, module):
+    upload_datetime = datetime.now()
+    upload_id = int(upload_datetime.strftime("%Y%m%d%H%M%S"))
+    upload_ip = ip_address
+    dataframe = dataframe.assign(upload_id=upload_id,upload_datetime=upload_datetime,upload_ip=upload_ip)
+    
+    # re-order columns
+    if module == 'module_4':
+        dataframe = dataframe[['upload_id','upload_datetime','upload_ip','module', '-', 'reset', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
+    elif module == 'module_32':
+        dataframe = dataframe[['upload_id','upload_datetime','upload_ip','module', 'sim', 'net', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
+    elif module == 'module_ge':
+        dataframe = dataframe[['upload_id','upload_datetime','upload_ip','mobile_port', 'port_status', 'signal_strength', 'call_duration', 'dialed_calls', 'successfull_calls', 'asr', 'acd', 'allocated_ammount', 'consumed_amount']]
+    
+    # add history data into database
+    history_data = {'upload_id':upload_id, 'upload_datetime':upload_datetime, 'upload_ip':upload_ip}
+    append_history(history_data)
+    # append to database
+    append_table(dataframe, f'{module}_table')
+
 def entry_section(conn, module):
     # validate module and database
     if module == 'module_4':
@@ -84,22 +104,4 @@ def entry_section(conn, module):
         submit_btn = st.button("Tambah ke Database", type='primary', key="submit_btn")
         if submit_btn:
             # add additional data
-            upload_datetime = datetime.now()
-            upload_id = int(upload_datetime.strftime("%Y%m%d%H%M%S"))
-            upload_ip = ip_address_selected
-            preview_df = preview_df.assign(upload_id=upload_id,upload_datetime=upload_datetime,upload_ip=upload_ip)
-            
-            # re-order columns
-            if module == 'module_4':
-                preview_df = preview_df[['upload_id','upload_datetime','upload_ip','module', '-', 'reset', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
-            elif module == 'module_32':
-                preview_df = preview_df[['upload_id','upload_datetime','upload_ip','module', 'sim', 'net', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses','asr']]
-            elif module == 'module_ge':
-                preview_df = preview_df[['upload_id','upload_datetime','upload_ip','mobile_port', 'port_status', 'signal_strength', 'call_duration', 'dialed_calls', 'successfull_calls', 'asr', 'acd', 'allocated_ammount', 'consumed_amount']]
-            
-            # add history data into database
-            history_data = {'upload_id':upload_id, 'upload_datetime':upload_datetime, 'upload_ip':upload_ip, 'data':str(preview_df.to_dict())}
-            append_history(history_data)
-            # append to database
-            append_table(preview_df, f'{module}_table')
-
+            upload_data(preview_df, ip_address_selected, module)
