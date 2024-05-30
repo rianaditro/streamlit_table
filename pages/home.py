@@ -19,7 +19,7 @@ module_ge_df.rename(columns={'mobile_port':'module/mobile_port', 'asr':'ASR(%)'}
 data = pd.concat([module_4_df, module_32_df, module_ge_df], ignore_index=True)
 
 default_asr = conn.query('SELECT asr_value FROM asr_value WHERE id = 1')
-
+st.session_state['asr_value'] = default_asr['asr_value'][0]
 
 def highlight(s,n):
     if float(s['ASR(%)']) < n:
@@ -31,11 +31,10 @@ def highlight(s,n):
         return ['background-color: white'] * len(s)
 
 def home_main():
-    st.session_state['asr_value'] = default_asr['asr_value'][0]
     # frontend section
     st.write("Welcome!")
     
-    st.subheader("Statistik Tabel Terkini", anchor=False)
+    st.subheader("Statistik Tabel Gabungan", anchor=False)
     with st.container(border=True):
         st.write("Tabel Terbaru")
         input1, input2, input3 = st.columns(3)
