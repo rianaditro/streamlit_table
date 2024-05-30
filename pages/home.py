@@ -51,6 +51,8 @@ def home_main():
         if filter_data:
             # change TEXT data column to numeric for filter
             view_data = data[data['ASR(%)'].apply(pd.to_numeric) < st.session_state['asr_value']]
+            # remove data with 0 calls
+            view_data = view_data[view_data['successfull_calls'] != '0']
         else:
             view_data = data.style.apply(highlight, n=asr_input, axis=1)
 

@@ -19,12 +19,12 @@ def clear_cache():
 # highlight dataframe based on input
 def highlight(s,n):
     if float(s['asr']) < n:
-        if 'calls' in s.columns:
+        if 'calls' in s:
             if float(s['calls']) > 0:
                 return ['background-color: orange'] * len(s)
             else:
                 return ['background-color: white'] * len(s)
-        elif 'successfull_calls' in s.columns:
+        elif 'successfull_calls' in s:
             if float(s['successfull_calls']) > 0:
                 return ['background-color: orange'] * len(s)
             else:
@@ -82,6 +82,10 @@ def report_section(df:pd.DataFrame, module:str):
         if filter_data:
             # change TEXT data column to numeric for filter
             view_data = df[df['asr'].apply(pd.to_numeric) < st.session_state['asr_value']]
+            if 'calls' in df.columns:
+                view_data = view_data[view_data['calls'] != '0']
+            elif 'successfull_calls' in df.columns:
+                view_data = view_data[view_data['successfull_calls'] != '0']
         else:
             view_data = df.style.apply(highlight, n=asr_input, axis=1)
 
