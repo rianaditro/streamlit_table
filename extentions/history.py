@@ -1,7 +1,9 @@
 import streamlit as st
 
+from datetime import timedelta
 
-conn = st.connection('main_db', type='sql')
+
+conn = st.connection('main_db', type='sql', ttl=timedelta(minutes=59))
 
 
 def update_table(module_filter):

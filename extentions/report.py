@@ -3,10 +3,11 @@ import pandas as pd
 
 from io import BytesIO
 from sqlalchemy.sql import text
+from datetime import timedelta
 
 
 # connection to sqlite
-conn = st.connection('main_db', type='sql')
+conn = st.connection('main_db', type='sql', ttl=timedelta(minutes=59))
 
 
 # get the latest data of database
@@ -18,10 +19,16 @@ def clear_cache():
 # highlight dataframe based on input
 def highlight(s,n):
     if float(s['asr']) < n:
-        if float(s['calls']) > 0:
-            return ['background-color: orange'] * len(s)
-        else:
-            return ['background-color: white'] * len(s)
+        if 'calls' in s.columns:
+            if float(s['calls']) > 0:
+                return ['background-color: orange'] * len(s)
+            else:
+                return ['background-color: white'] * len(s)
+        elif 'successfull_calls' in s.columns:
+            if float(s['successfull_calls']) > 0:
+                return ['background-color: orange'] * len(s)
+            else:
+                return ['background-color: white'] * len(s)
     else:
         return ['background-color: white'] * len(s)
 

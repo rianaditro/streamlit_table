@@ -20,7 +20,6 @@ def format_dict(text:list, keys:list)->dict:
         result[keys[i]] = text[i].replace('\n','').replace('\r','')
         # i += 1
     # add ASR column calls/calls+failed
-    print(result)
     calls = int(result['calls'])
     failed = int(result['failed'])
     calls_failed = calls + failed
@@ -51,7 +50,6 @@ def extract_module_32(txt_file):
 
 def extract_module_4(txt_file):
     indexes = get_index(txt_file)
-    print(indexes)
     result = []
     keys = ['module', '-', 'reset', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses']
     for i, start in enumerate(range(1,len(indexes),5)):

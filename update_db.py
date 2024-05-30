@@ -15,26 +15,35 @@ logging.basicConfig(filename='app.log', level=logging.INFO,
 conn = st.connection('main_db', type='sql', ttl=timedelta(minutes=59))
 ip_df = conn.query('SELECT ip_address, tipe_perangkat FROM perangkat_table')
 
+def info(message):
+    logging.info(message)
+    print(message)
+
 def get_ip_list(df, module):
-    return df[df['tipe_perangkat'] == module]['ip_address'].tolist()
+    ip_list = df[df['tipe_perangkat'] == module]['ip_address'].tolist()
+    return ip_list    
 
 vbm_ip_list = get_ip_list(ip_df, 'Perangkat 4 Modul')
 ge_ip_list = get_ip_list(ip_df, 'Perangkat GE')
 se_ip_list = get_ip_list(ip_df, 'Perangkat 32 Modul')
 
 def scrap_list(scraper, ip_list, module):
-    logging.info(f"Scraping {len(ip_list)} of IP Address from {module}")
+    info(f"Scraping {len(ip_list)} of IP Address from {module}")
     for ip in ip_list:
-        df = scraper.get_data(ip, module)
-        upload_data(df, ip, module)
+        try:
+            df = scraper.get_data(ip, module)
+            upload_data(df, ip, module)
+            info("Data uploaded to database")
+        except:
+            logging.warning(f"Failed to scrape {ip}")
 
 def scrap_job():
     scraper = Scraper()
-    logging.info("===================== Updating Data =====================")
+    info("===================== Updating Data =====================")
     scrap_list(scraper, vbm_ip_list, 'module_4')
     scrap_list(scraper, se_ip_list, 'module_32')
     scrap_list(scraper, ge_ip_list, 'module_ge')
-    logging.info("===================== Data Updated =====================")
+    info("===================== Data Updated =====================")
     del scraper
 
 # Schedule the jobs
@@ -47,10 +56,10 @@ def run_scheduler():
         time.sleep(1)
 
 if __name__ == "__main__":
-    logging.info("Auto-update data started")
+    info("Auto-update data started")
+    scrap_job()
     try:
         print("Program is running, please let this window open")
         run_scheduler()
-    except KeyboardInterrupt:
-        logging.info("Scheduler stopped")
-        print("Auto-update data stopped")
+    except:
+        info("Auto-update data stopped")

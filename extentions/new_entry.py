@@ -2,13 +2,13 @@ import streamlit as st
 import pandas as pd
 
 from io import StringIO
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.sql import text
 
 from extentions.converter import extract_module_4, extract_module_32
 
 
-conn = st.connection('main_db', type='sql')
+conn = st.connection('main_db', type='sql', ttl=timedelta(minutes=59))
 cursor = conn.connect()
 
 
@@ -33,13 +33,14 @@ def append_history(data):
                
 def append_table(df:pd.DataFrame, tablename):
     df.to_sql(tablename, cursor, if_exists='append', index=False)
-    # st.session_state["file_uploader_key"] += 1
-    # del st.session_state[(st.session_state["file_uploader_key"]-1)]
+    if "file_uploader_key" in st.session_state:
+        st.session_state["file_uploader_key"] += 1
+        del st.session_state[(st.session_state["file_uploader_key"]-1)]
     clear_cache()
 
 def upload_data(dataframe, ip_address, module):
     upload_datetime = datetime.now()
-    upload_id = int(upload_datetime.strftime("%Y%m%d%H%M%S"))
+    upload_id = int(upload_datetime.strftime("%Y%m%d%H"))
     upload_ip = ip_address
     dataframe = dataframe.assign(upload_id=upload_id,upload_datetime=upload_datetime,upload_ip=upload_ip)
     
