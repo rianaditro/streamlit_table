@@ -12,7 +12,7 @@ logging.basicConfig(filename='app.log', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 # get list of ip address
-conn = st.connection('main_db', type='sql', ttl=timedelta(hours=59))
+conn = st.connection('main_db', type='sql', ttl=timedelta(minutes=59))
 ip_df = conn.query('SELECT ip_address, tipe_perangkat FROM perangkat_table')
 
 def get_ip_list(df, module):
