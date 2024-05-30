@@ -9,7 +9,7 @@ c = conn.cursor()
 # Membuat tabel
 c.execute('''
 CREATE TABLE IF NOT EXISTS module_32_table (
-    upload_id INTEGER,
+    upload_id TEXT,
     upload_datetime TEXT,
     upload_ip TEXT,
     module TEXT,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS module_32_table (
 
 c.execute('''
 CREATE TABLE IF NOT EXISTS module_4_table (
-    upload_id INTEGER,
+    upload_id TEXT,
     upload_datetime TEXT,
     upload_ip TEXT,
     module TEXT,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS perangkat_table (
 
 c.execute('''
 CREATE TABLE IF NOT EXISTS history_upload (
-    upload_id INTEGER PRIMARY_KEY,
+    upload_id TEXT PRIMARY_KEY,
     upload_datetime TEXT,
     ip_address TEXT
 )
@@ -65,12 +65,12 @@ CREATE TABLE IF NOT EXISTS history_upload (
 # Membuat tabel
 c.execute('''
 CREATE TABLE IF NOT EXISTS module_ge_table (
-    upload_id INTEGER,
+    upload_id TEXT,
     upload_datetime TEXT,
     upload_ip TEXT,
     mobile_port TEXT,
     port_status TEXT,
-    signal_strenght TEXT,
+    signal_strength TEXT,
     call_duration TEXT,
     dialed_calls TEXT,
     successfull_calls TEXT,

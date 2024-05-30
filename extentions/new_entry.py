@@ -33,8 +33,8 @@ def append_history(data):
                
 def append_table(df:pd.DataFrame, tablename):
     df.to_sql(tablename, cursor, if_exists='append', index=False)
-    st.session_state["file_uploader_key"] += 1
-    del st.session_state[(st.session_state["file_uploader_key"]-1)]
+    # st.session_state["file_uploader_key"] += 1
+    # del st.session_state[(st.session_state["file_uploader_key"]-1)]
     clear_cache()
 
 def upload_data(dataframe, ip_address, module):

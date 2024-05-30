@@ -29,10 +29,12 @@ def history_section(module:str):
                 module_filter_index = 1
             elif module == 'module_32':
                 module_filter_index = 2
+            elif module == 'module_ge':
+                module_filter_index = 3
             else:
                 module_filter_index = 0
             module_filter = st.selectbox('Lihat Riwayat:', 
-                                         options=['All', 'Perangkat 4 Modul', 'Perangkat 32 Modul'], 
+                                         options=['All', 'Perangkat 4 Modul', 'Perangkat 32 Modul', 'Perangkat GE'], 
                                          index=module_filter_index)
         
         history_data = update_table(module_filter)
