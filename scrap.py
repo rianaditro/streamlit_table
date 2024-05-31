@@ -47,8 +47,12 @@ class Scraper:
         info(f"Logged into {self.ip_address}")
 
     def get_html(self, ip_address, module:str):
-        url = f'https://{ip_address}'
-        self.driver.get(url)
+        try:
+            url = f'https://{ip_address}'
+            self.driver.get(url)
+        except:
+            url = f'http://{ip_address}'
+            self.driver.get(url)
         self.login(module=module)
         # if not GE then VBM or SG
         if module != 'module_ge':
