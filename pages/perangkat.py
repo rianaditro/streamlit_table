@@ -7,8 +7,7 @@ def clear_cache():
     st.cache_resource.clear()
     st.rerun()
 
-def perangkat_main():    
-    conn = st.connection('main_db', type='sql')
+def perangkat_main(conn):    
     perangkat_df = conn.query('SELECT * FROM perangkat_table')
     # frontend section
     st.subheader("Manajemen Perangkat", anchor=False)

@@ -5,11 +5,6 @@ from io import BytesIO
 from sqlalchemy.sql import text
 from datetime import timedelta
 
-
-# connection to sqlite
-conn = st.connection('main_db', type='sql', ttl=timedelta(minutes=59))
-
-
 # get the latest data of database
 def clear_cache():
     st.cache_data.clear()
@@ -63,7 +58,7 @@ def update_asr(db_connection, update_value):
         s.commit()
     clear_cache()
 
-def report_section(df:pd.DataFrame, module:str):
+def report_section(conn, df:pd.DataFrame, module:str):
     column_config = {'upload_datetime':'Tanggal dan Waktu Upload', 
                      'upload_ip':'IP Perangkat'}
     

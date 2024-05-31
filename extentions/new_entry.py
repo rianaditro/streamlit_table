@@ -8,10 +8,6 @@ from sqlalchemy.sql import text
 from extentions.converter import extract_module_4, extract_module_32
 
 
-conn = st.connection('main_db', type='sql', ttl=timedelta(minutes=59))
-cursor = conn.connect()
-
-
 def clear_cache():
     st.cache_data.clear()
     st.cache_resource.clear()
@@ -26,19 +22,20 @@ def preview_upload_file(upload_file, module):
     preview_df = pd.DataFrame(preview_df)
     return preview_df
 
-def append_history(data):
+def append_history(conn, data):
     with conn.session as s:
         s.execute(text(f'''INSERT INTO history_upload (upload_id, upload_datetime, ip_address) VALUES ("{data['upload_id']}", "{data['upload_datetime']}", "{data['upload_ip']}")'''))
         s.commit()
                
-def append_table(df:pd.DataFrame, tablename):
+def append_table(conn, df:pd.DataFrame, tablename):
+    cursor = conn.connection()
     df.to_sql(tablename, cursor, if_exists='append', index=False)
     if "file_uploader_key" in st.session_state:
         st.session_state["file_uploader_key"] += 1
         del st.session_state[(st.session_state["file_uploader_key"]-1)]
     clear_cache()
 
-def upload_data(dataframe, ip_address, module):
+def upload_data(conn, dataframe, ip_address, module):
     upload_datetime = datetime.now()
     upload_id = upload_datetime.strftime("%Y%m%d%H")+'_ID'
     upload_ip = ip_address
@@ -54,9 +51,9 @@ def upload_data(dataframe, ip_address, module):
     
     # add history data into database
     history_data = {'upload_id':upload_id, 'upload_datetime':upload_datetime, 'upload_ip':upload_ip}
-    append_history(history_data)
+    append_history(conn, history_data)
     # append to database
-    append_table(dataframe, f'{module}_table')
+    append_table(conn, dataframe, f'{module}_table')
 
 def entry_section(conn, module):
     # validate module and database
@@ -105,4 +102,4 @@ def entry_section(conn, module):
         submit_btn = st.button("Tambah ke Database", type='primary', key="submit_btn")
         if submit_btn:
             # add additional data
-            upload_data(preview_df, ip_address_selected, module)
+            upload_data(conn, preview_df, ip_address_selected, module)

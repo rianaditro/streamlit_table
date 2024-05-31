@@ -32,7 +32,7 @@ def scrap_list(scraper, ip_list, module):
     for ip in ip_list:
         try:
             df = scraper.get_data(ip, module)
-            upload_data(df, ip, module)
+            upload_data(conn, df, ip, module)
             info("Data uploaded to database")
         except:
             logging.warning(f"Failed to scrape {ip}")

@@ -2,24 +2,34 @@ import streamlit as st
 import pandas as pd
 
 from datetime import timedelta
-from extentions.report import update_asr
+from sqlalchemy import text
 
 
-conn = st.connection('main_db', type='sql', ttl=timedelta(minutes=59))
+def clear_cache():
+    st.cache_data.clear()
+    st.cache_resource.clear()
+    st.rerun()
+
+def update_asr(db_connection, update_value):
+    st.session_state['asr_value'] = update_value
+    with db_connection.session as s:
+        s.execute(text(f'UPDATE asr_value SET asr_value = {update_value} WHERE id = 1'))
+        s.commit()
+    clear_cache()
+
+def get_data(conn):
 # module 4
-module_4_df = conn.query('SELECT m.upload_id, m.upload_datetime, p.nama_perangkat, m.upload_ip, p.tipe_perangkat, m.module, m.hms, m.calls, m.asr FROM module_4_table AS m JOIN perangkat_table AS p ON m.upload_ip = p.ip_address WHERE p.tipe_perangkat = "Perangkat 4 Modul" ORDER BY m.upload_datetime DESC')
-module_4_df.rename(columns={'module':'module/mobile_port', 'hms':'call_duration', 'calls':'successfull_calls', 'asr':'ASR(%)'}, inplace=True)
-# module 32
-module_32_df = conn.query('SELECT m.upload_id, m.upload_datetime, p.nama_perangkat, m.upload_ip, p.tipe_perangkat, m.module, m.hms, m.calls, m.asr FROM module_32_table AS m JOIN perangkat_table AS p ON m.upload_ip = p.ip_address WHERE p.tipe_perangkat = "Perangkat 32 Modul" ORDER BY m.upload_datetime DESC')
-module_32_df.rename(columns={'module':'module/mobile_port', 'hms':'call_duration', 'calls':'successfull_calls', 'asr':'ASR(%)'}, inplace=True)
-# module GE
-module_ge_df = conn.query('SELECT m.upload_id, m.upload_datetime, p.nama_perangkat, m.upload_ip, p.tipe_perangkat, m.mobile_port, m.call_duration, m.successfull_calls, m.asr FROM module_ge_table AS m JOIN perangkat_table AS p ON m.upload_ip = p.ip_address WHERE p.tipe_perangkat = "Perangkat GE" ORDER BY m.upload_datetime DESC')
-module_ge_df.rename(columns={'mobile_port':'module/mobile_port', 'asr':'ASR(%)'}, inplace=True)
+    module_4_df = conn.query('SELECT m.upload_id, m.upload_datetime, p.nama_perangkat, m.upload_ip, p.tipe_perangkat, m.module, m.hms, m.calls, m.asr FROM module_4_table AS m JOIN perangkat_table AS p ON m.upload_ip = p.ip_address WHERE p.tipe_perangkat = "Perangkat 4 Modul" ORDER BY m.upload_datetime DESC')
+    module_4_df.rename(columns={'module':'module/mobile_port', 'hms':'call_duration', 'calls':'successfull_calls', 'asr':'ASR(%)'}, inplace=True)
+    # module 32
+    module_32_df = conn.query('SELECT m.upload_id, m.upload_datetime, p.nama_perangkat, m.upload_ip, p.tipe_perangkat, m.module, m.hms, m.calls, m.asr FROM module_32_table AS m JOIN perangkat_table AS p ON m.upload_ip = p.ip_address WHERE p.tipe_perangkat = "Perangkat 32 Modul" ORDER BY m.upload_datetime DESC')
+    module_32_df.rename(columns={'module':'module/mobile_port', 'hms':'call_duration', 'calls':'successfull_calls', 'asr':'ASR(%)'}, inplace=True)
+    # module GE
+    module_ge_df = conn.query('SELECT m.upload_id, m.upload_datetime, p.nama_perangkat, m.upload_ip, p.tipe_perangkat, m.mobile_port, m.call_duration, m.successfull_calls, m.asr FROM module_ge_table AS m JOIN perangkat_table AS p ON m.upload_ip = p.ip_address WHERE p.tipe_perangkat = "Perangkat GE" ORDER BY m.upload_datetime DESC')
+    module_ge_df.rename(columns={'mobile_port':'module/mobile_port', 'asr':'ASR(%)'}, inplace=True)
 
-data = pd.concat([module_4_df, module_32_df, module_ge_df], ignore_index=True)
-
-default_asr = conn.query('SELECT asr_value FROM asr_value WHERE id = 1')
-st.session_state['asr_value'] = default_asr['asr_value'][0]
+    data = pd.concat([module_4_df, module_32_df, module_ge_df], ignore_index=True)
+    return data
 
 def highlight(s,n):
     if float(s['ASR(%)']) < n:
@@ -30,7 +40,8 @@ def highlight(s,n):
     else:
         return ['background-color: white'] * len(s)
 
-def home_main():
+def home_main(conn):
+    data = get_data(conn)
     # frontend section
     st.write("Welcome!")
     
