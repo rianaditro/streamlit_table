@@ -27,10 +27,9 @@ def highlight(s,n):
     else:
         return ['background-color: white'] * len(s)
 
-def show_dataframe(df:pd.DataFrame, column_config):
+def show_dataframe(df:pd.DataFrame):
     return st.dataframe(df, use_container_width=True, 
-                 hide_index=True, 
-                 column_config=column_config)
+                 hide_index=True)
 
 def download_excel(filename:str, df:pd.DataFrame):
     buffer = BytesIO()
@@ -43,11 +42,19 @@ def download_excel(filename:str, df:pd.DataFrame):
                        mime='application/vnd.ms-excel',
                        key="download_excel_key")
 
-def delete_table(tablename:str, db_connection):
-    clear_btn = st.button("Hapus Tabel", type='secondary', key="clear_btn_key")
+def delete_table(module:str, db_connection):
+    tablename = f'{module}_table'
+    if module == 'module_4':
+        tipe_perangkat = 'Perangkat 4 Modul'
+    elif module == 'module_32':
+        tipe_perangkat = 'Perangkat 32 Modul'
+    elif module == 'module_ge':
+        tipe_perangkat = 'Perangkat GE'
+    clear_btn = st.button("Hapus Tabel", type='secondary', key="clear_btn_key",disabled=True)
     if clear_btn:
         with db_connection.session as s:
             s.execute(text(f'DELETE FROM {tablename}'))
+            s.execute(text(f'DELETE FROM history_upload WHERE tipe_perangkat = "{tipe_perangkat}"'))
             s.commit()
         clear_cache()
 
@@ -58,10 +65,7 @@ def update_asr(db_connection, update_value):
         s.commit()
     clear_cache()
 
-def report_section(conn, df:pd.DataFrame, module:str):
-    column_config = {'upload_datetime':'Tanggal dan Waktu Upload', 
-                     'upload_ip':'IP Perangkat'}
-    
+def report_section(conn, df:pd.DataFrame, module:str):    
     with st.container(border=True):
         st.write("Tabel Terbaru")
         input1, input2, input3 = st.columns(3)
@@ -84,9 +88,9 @@ def report_section(conn, df:pd.DataFrame, module:str):
         else:
             view_data = df.style.apply(highlight, n=asr_input, axis=1)
 
-        show_dataframe(view_data, column_config)
+        show_dataframe(view_data)
         col1, col2, col3, col4, col5, col6 = st.columns(6)
         with col1:
             download_excel(f'report_{module}.xlsx', view_data)     
         with col2:
-            delete_table(f'{module}_table', conn)
+            delete_table(module, conn)
