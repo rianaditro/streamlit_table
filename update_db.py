@@ -47,7 +47,9 @@ def scrap_job():
     del scraper
 
 # Schedule the jobs
-schedule.every(2).hours.at("59:59").do(scrap_job)
+# schedule.every(2).hours.at("59:59").do(scrap_job)
+from test_data import test_job
+schedule.every().minute.do(test_job)
 
 # Function to run the scheduler
 def run_scheduler():
@@ -57,9 +59,11 @@ def run_scheduler():
 
 if __name__ == "__main__":
     info("Auto-update data started")
-    scrap_job()
+    # scrap_job()
+    test_job()
     try:
         print("Program is running, please let this window open")
         run_scheduler()
-    except:
+    except Exception as e:
+        print(e)
         info("Auto-update data stopped")

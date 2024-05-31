@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 
-from datetime import timedelta
 from sqlalchemy import text
 
 
@@ -48,11 +47,17 @@ def home_main(conn):
     st.subheader("Statistik Tabel Gabungan", anchor=False)
     with st.container(border=True):
         st.write("Tabel Terbaru")
+        btn1, btn2, btn3 = st.columns(3)
+        with btn1:
+            refresh_btn = st.button("Fetch Latest Data", type='primary', key="fetch_latest_data_btn")
+            if refresh_btn:
+                clear_cache()
+                data = get_data(conn)
         input1, input2, input3 = st.columns(3)
         with input1:
             asr_input = st.number_input('Input ASR', min_value=0, 
                                         max_value=100, value=st.session_state['asr_value'], step=1, 
-                                        key="asr_input_key")
+                                        key="asr_input_key_home")
             if asr_input != st.session_state['asr_value']:
                 update_asr(conn, asr_input)
 

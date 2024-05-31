@@ -3,7 +3,9 @@ import pandas as pd
 
 from io import BytesIO
 from sqlalchemy.sql import text
-from datetime import timedelta
+from extentions.get_data import table_data
+
+
 
 # get the latest data of database
 def clear_cache():
@@ -68,11 +70,17 @@ def update_asr(db_connection, update_value):
 def report_section(conn, df:pd.DataFrame, module:str):    
     with st.container(border=True):
         st.write("Tabel Terbaru")
+        btn1, btn2, btn3 = st.columns(3)
+        with btn1:
+            refresh_btn = st.button("Fetch Latest Data", type='primary', key="fetch_latest_data_btn")
+            if refresh_btn:
+                clear_cache()
+                df = table_data(conn)
         input1, input2, input3 = st.columns(3)
         with input1:
             asr_input = st.number_input('Input ASR', min_value=0, 
                                         max_value=100, value=st.session_state['asr_value'], step=1, 
-                                        key="asr_input_key")
+                                        key="asr_input_key_report")
             if asr_input != st.session_state['asr_value']:
                 update_asr(conn, asr_input)
 

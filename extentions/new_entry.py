@@ -28,7 +28,7 @@ def append_history(conn, data):
         s.commit()
                
 def append_table(conn, df:pd.DataFrame, tablename):
-    cursor = conn.connection()
+    cursor = conn.connect()
     df.to_sql(tablename, cursor, if_exists='append', index=False)
     if "file_uploader_key" in st.session_state:
         st.session_state["file_uploader_key"] += 1
