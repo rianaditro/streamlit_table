@@ -1,10 +1,11 @@
 import streamlit as st
-import schedule
+import schedule, datetime
 import time
 import logging
 
 from sqlalchemy import text
 from datetime import timedelta
+from datetime import date
 from scrap import Scraper
 from extentions.new_entry import upload_data
 
@@ -49,11 +50,13 @@ def scrap_job():
     del scraper
 
 def daily_delete():
-    with conn.session() as s:
-        s.execute(text('DELETE FROM module_4_table WHERE upload_datetime < DATEADD(day, DATEDIFF(day, 0, GETDATE()), -2)'))
-        s.execute(text('DELETE FROM module_32_table WHERE upload_datetime < DATEADD(day, DATEDIFF(day, 0, GETDATE()), -2)'))
-        s.execute(text('DELETE FROM module_ge_table WHERE upload_datetime < DATEADD(day, DATEDIFF(day, 0, GETDATE()), -2)'))
-        s.execute(text('DELETE FROM history_upload WHERE upload_datetime < DATEADD(day, DATEDIFF(day, 0, GETDATE()), -2)'))
+    limit_date = date.today() - timedelta(days=2)
+    limit_id = limit_date.strftime("%Y%m%d")
+    with conn.session as s:
+        s.execute(text('DELETE FROM module_4_table WHERE upload_id LIKE "limit_id%"'))
+        s.execute(text('DELETE FROM module_32_table WHERE upload_id LIKE "limit_id%"'))
+        s.execute(text('DELETE FROM module_ge_table WHERE upload_id LIKE "limit_id%"'))
+        s.execute(text('DELETE FROM history_upload WHERE upload_id LIKE "limit_id%"'))
         s.commit()
 
 # Schedule the jobs
@@ -68,6 +71,7 @@ def run_scheduler():
 
 if __name__ == "__main__":
     info("Auto-update data started")
+    daily_delete()
     scrap_job()
     try:
         print("Program is running, please let this window open")

@@ -17,7 +17,8 @@ def remove_char(text:str)->str:
 def format_dict(text:list, keys:list)->dict:
     result = dict()
     text = text.split(' ')
-    text.remove('(')
+    if '(' in text:
+        text.remove('(')
     text = [i for i in text if i != '']
     # i = 0
     for i in range(len(text)):

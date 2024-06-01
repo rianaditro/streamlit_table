@@ -57,3 +57,10 @@
 2024-06-01 12:15:20,158 - INFO - Scraping 0 of IP Address from module_32
 2024-06-01 12:15:20,159 - INFO - Scraping 0 of IP Address from module_ge
 2024-06-01 12:15:20,159 - INFO - ===================== Data Updated =====================
+2024-06-01 16:07:19,975 - INFO - Auto-update data started
+2024-06-01 16:27:18,030 - INFO - Auto-update data started
+2024-06-01 16:27:20,126 - INFO - ===================== Updating Data =====================
+2024-06-01 16:27:20,127 - INFO - Scraping 0 of IP Address from module_4
+2024-06-01 16:27:20,127 - INFO - Scraping 0 of IP Address from module_32
+2024-06-01 16:27:20,127 - INFO - Scraping 0 of IP Address from module_ge
+2024-06-01 16:27:20,128 - INFO - ===================== Data Updated =====================
