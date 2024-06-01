@@ -107,12 +107,13 @@ class Scraper:
             return df
 
 if __name__ == "__main__":
-    from extentions.new_entry import upload_data
-    import streamlit as st
-    conn = st.connection('main_db', type='sql')
-    url = "https://192.168.110.169"
+    
+    url = "192.168.111.2"
     scraper = Scraper()
-    df = scraper.get_data(url, module='module_ge')
-    upload_data(df, url, 'module_ge')
+    try:
+        df = scraper.get_data(url, module='module_4')
+        print(df)
+    except Exception as e:
+        print(e)
 
     

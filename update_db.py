@@ -3,6 +3,7 @@ import schedule
 import time
 import logging
 
+from sqlalchemy import text
 from datetime import timedelta
 from scrap import Scraper
 from extentions.new_entry import upload_data
@@ -47,8 +48,17 @@ def scrap_job():
     info("===================== Data Updated =====================")
     del scraper
 
+def daily_delete():
+    with conn.session() as s:
+        s.execute(text('DELETE FROM module_4_table WHERE upload_datetime < DATEADD(day, DATEDIFF(day, 0, GETDATE()), -2)'))
+        s.execute(text('DELETE FROM module_32_table WHERE upload_datetime < DATEADD(day, DATEDIFF(day, 0, GETDATE()), -2)'))
+        s.execute(text('DELETE FROM module_ge_table WHERE upload_datetime < DATEADD(day, DATEDIFF(day, 0, GETDATE()), -2)'))
+        s.execute(text('DELETE FROM history_upload WHERE upload_datetime < DATEADD(day, DATEDIFF(day, 0, GETDATE()), -2)'))
+        s.commit()
+
 # Schedule the jobs
 schedule.every(2).hours.at("59:59").do(scrap_job)
+schedule.every().day.at("00:00").do(daily_delete)
 
 # Function to run the scheduler
 def run_scheduler():

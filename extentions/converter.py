@@ -11,13 +11,17 @@ def get_index(txt_file:str)->list:
     del indexes[:4]
     return indexes
 
+def remove_char(text:str)->str:
+    return text.replace('\n','').replace('\r','').replace('(','').replace(')','')
+
 def format_dict(text:list, keys:list)->dict:
     result = dict()
     text = text.split(' ')
+    text.remove('(')
     text = [i for i in text if i != '']
     # i = 0
     for i in range(len(text)):
-        result[keys[i]] = text[i].replace('\n','').replace('\r','')
+        result[keys[i]] = remove_char(text[i])
         # i += 1
     # add ASR column calls/calls+failed
     calls = int(result['calls'])
@@ -52,25 +56,16 @@ def extract_module_4(txt_file):
     indexes = get_index(txt_file)
     result = []
     keys = ['module', '-', 'reset', 'minutes', 'hms', 'calls', 'reject', 'failed', 'coffs', 'smses']
-    for i, start in enumerate(range(1,len(indexes),5)):
-        data_per_module = [txt_file[indexes[start]+1]]
+    for i, idx in enumerate(range(6,len(indexes),5)):
+        data_per_module = [txt_file[indexes[idx]+1]]
         data_per_module = format_list(data_per_module, keys,i)
         result.extend(data_per_module)
     return result
     
 
 
-# if __name__ == '__main__':
-#     with open('statistics 32 module.txt','r') as f:
-#         module32 = f.readlines()
+if __name__ == '__main__':
+    with open('stat.txt','r') as f:
+        module4 = f.readlines()
 
-#     with open('statistics(7).txt','r') as f:
-#         module4 = f.readlines()
-
-#     # m32 = extract_module_32(module32)
-    
-
-#     m4 = extract_module_4(module4)
-        
-#     df = pd.DataFrame(m4)
-#     df.to_excel('output.xlsx')
+    print(extract_module_4(module4))
