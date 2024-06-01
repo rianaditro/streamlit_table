@@ -34,7 +34,8 @@ def scrap_list(scraper, ip_list, module):
             df = scraper.get_data(ip, module)
             upload_data(conn, df, ip, module)
             info("Data uploaded to database")
-        except:
+        except Exception as e:
+            info(f"Failed to upload data to database: {e}")
             logging.warning(f"Failed to scrape {ip}")
 
 def scrap_job():

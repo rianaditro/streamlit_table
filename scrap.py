@@ -50,13 +50,17 @@ class Scraper:
         try:
             url = f'https://{ip_address}'
             self.driver.get(url)
-        except:
+            info(f"Connected to https://{ip_address}")
+        except Exception as e:
+            info(f"Failed to connect to https://{ip_address}: {e}")
+            info(f"Trying http://{ip_address}")
             url = f'http://{ip_address}'
             self.driver.get(url)
         self.login(module=module)
         # if not GE then VBM or SG
         if module != 'module_ge':
             self.driver.get(f'{url}/?section=3')
+            info(f"Processing {self.driver.current_url}")
             self.html = self.driver.page_source
         else:
             # Page is divided by 3 sub page
@@ -66,6 +70,7 @@ class Scraper:
             self.html2 = self.driver.page_source
             self.driver.get(f'{url}/MobileStatus.html?SubPageIndex=3')
             self.html3 = self.driver.page_source
+            info(f"Processing {self.driver.current_url}")
 
     def get_data(self, ip_address, module:str='GE'):
         self.ip_address = ip_address
